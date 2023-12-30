@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
       - name: udacity-app-container
-        image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPOSITORY_NAME>:<TAG>
+        image: 947772818907.dkr.ecr.us-east-1.amazonaws.com/udacity-new:latest

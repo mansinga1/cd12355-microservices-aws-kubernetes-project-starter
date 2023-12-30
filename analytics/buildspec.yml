@@ -1,11 +1,15 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - pip3 install -q awscli --upgrade --user
+      - yum -q install -y jq
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       # Check if the ECR repository exists
-      - aws ecr create-repository --repository-name $REPO-NAME
+      - aws ecr create-repository --repository-name UDACITY-ECR
       # - REPOSITORY_NAME=$REPO-NAME
       # - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME
       # - # Check if ECR repository exists; if not, create it

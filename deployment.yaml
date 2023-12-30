@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udacity-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: udacity-app
+  template:
+    metadata:
+      labels:
+        app: udacity-app
+    spec:
+      containers:
+      - name: udacity-app-container
+        image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<REPOSITORY_NAME>:<TAG>

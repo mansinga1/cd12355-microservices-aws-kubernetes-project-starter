@@ -9,6 +9,7 @@ phases:
       - echo Logging in to Amazon ECR...
       # Check if the ECR repository exists
       - aws ecr create-repository --repository-name alpha --region us-east-1
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       # - REPOSITORY_NAME=$REPO-NAME
       # - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME
       # - # Check if ECR repository exists; if not, create it

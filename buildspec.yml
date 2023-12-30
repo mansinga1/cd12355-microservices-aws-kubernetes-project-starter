@@ -26,8 +26,9 @@ phases:
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI .
     # Generate Docker image tag based on the source version
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - docker tag $REPOSITORY_URI:latest $IMAGE_URI
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
 
 

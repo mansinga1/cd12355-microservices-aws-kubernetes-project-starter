@@ -6,12 +6,12 @@ phases:
       - yum -q install -y jq awscli
   pre_build:
     commands:
-      # - echo Logging in to Amazon ECR...
+      - echo Logging in to Amazon ECR...
       # # - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      # - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
       # Set repository name and URI
-      - REPOSITORY_NAME=test
+      - REPOSITORY_NAME=$REPO-NAME
       - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME
       # Check if ECR repository exists; if not, create it
       - |

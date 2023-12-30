@@ -4,24 +4,36 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - (aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      # Create a new ECR repository
-      - aws ecr create-repository --repository-name $REPO-NAME || true
-      # - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $REPO_NAME --query 'repositories[0].repositoryUri' --output text || echo "$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME")
-      # # - echo Using ECR Repository URI "$REPOSITORY_URI"
-      # - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      # - IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
+      # Check if the ECR repository exists
+      - REPOSITORY_NAME=$REPO_NAME
+      - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPOSITORY_NAME
+      - |
+        if aws ecr describe-repositories --repository-names $REPOSITORY_NAME >/dev/null 2>&1; then
+          echo "ECR repository $REPOSITORY_NAME exists."
+        else
+          echo "ECR repository $REPOSITORY_NAME does not exist. Creating..."
+          aws ecr create-repository --repository-name $REPOSITORY_NAME
+        fi
+#       # Retrieve the repository URI
+#       - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $REPOSITORY_NAME --query 'repositories[0].repositoryUri' --output text)
+#       - echo "Using ECR Repository URI: $REPOSITORY_URI"
+#       # Generate Docker image tag based on the source version
+#       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+#       - IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
+
 #   build:
 #     commands:
 #       - echo Build started on `date`
 #       - echo Building the Docker image...
 #       - docker build -t $REPOSITORY_URI .
 #       - docker tag $REPOSITORY_URI:latest $IMAGE_URI
+
 #   post_build:
 #     commands:
 #       - echo Build completed on `date`
 #       - echo Pushing the Docker images to ECR...
 #       - docker push $IMAGE_URI
+
 # artifacts:
 #   files:
 #     - '**/*'

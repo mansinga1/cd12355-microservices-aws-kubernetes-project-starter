@@ -22,13 +22,12 @@ phases:
         fi
   build:
     commands:
-    #   - echo Build started on `date`
-    #   - echo Building the Docker image...
-    #   - docker build -t $REPOSITORY_URI .
-    # # Generate Docker image tag based on the source version
-    #   - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-    #   - docker tag $REPOSITORY_URI:latest $IMAGE_URI
-      - docker build -t udacity-ecr .
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI .
+    # Generate Docker image tag based on the source version
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - docker tag $REPOSITORY_URI:latest $IMAGE_URI
 
 
 

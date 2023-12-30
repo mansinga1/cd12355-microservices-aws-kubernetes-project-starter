@@ -1,0 +1,85 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - yum -q install -y jq awscli docker
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      # # - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
+      # Set repository URI
+      - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME
+      # Check if ECR repository exists; if not, create it
+      - |
+        if aws ecr describe-repositories --repository-names $REPOSITORY_NAME > /dev/null 2>&1; then
+          echo "ECR repository $REPOSITORY_NAME exists."
+        else
+          echo "ECR repository $REPOSITORY_NAME does not exist. Creating..."
+          aws ecr create-repository --repository-name $REPOSITORY_NAME
+        fi
+  build:
+    commands:
+    #   - echo Build started on `date`
+    #   - echo Building the Docker image...
+    #   - docker build -t $REPOSITORY_URI .
+    # # Generate Docker image tag based on the source version
+    #   - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+    #   - docker tag $REPOSITORY_URI:latest $IMAGE_URI
+      - docker build -t udacity-ecr .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#       - echo Logging in to Amazon ECR...
+#       # Check if the ECR repository exists
+#       # - aws ecr create-repository --repository-name $REPO-NAME --region us-east-1
+#       # - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+#       - REPOSITORY_NAME=$REPO-NAME
+#       - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO-NAME
+#       - # Check if ECR repository exists; if not, create it
+#       - |
+#         if aws ecr describe-repositories --repository-names $REPOSITORY_NAME > /dev/null 2>&1; then
+#           echo "ECR repository $REPOSITORY_NAME exists."
+#         else
+#           echo "ECR repository $REPOSITORY_NAME does not exist. Creating..."
+#           aws ecr create-repository --repository-name $REPOSITORY_NAME --region us-east-1
+#         fi
+# #       # Retrieve the repository URI
+# #       - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $REPOSITORY_NAME --query 'repositories[0].repositoryUri' --output text)
+# #       - echo "Using ECR Repository URI: $REPOSITORY_URI"
+# #       # Generate Docker image tag based on the source version
+# #       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+# #       - IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
+
+
+
+#   post_build:
+#     commands:
+#       - echo Build completed on `date`
+#       - echo Pushing the Docker images to ECR...
+#       - docker push $IMAGE_URI
+
+# artifacts:
+#   files:
+#     - '**/*'

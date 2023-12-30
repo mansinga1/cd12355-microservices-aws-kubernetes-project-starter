@@ -4,7 +4,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - (aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
       # Create a new ECR repository
       - aws ecr create-repository --repository-name $REPO-NAME || true
       # - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $REPO_NAME --query 'repositories[0].repositoryUri' --output text || echo "$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME")

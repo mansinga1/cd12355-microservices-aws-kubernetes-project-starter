@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - yum -q install -y jq awscli
+      - yum -q install -y jq awscli docker
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...

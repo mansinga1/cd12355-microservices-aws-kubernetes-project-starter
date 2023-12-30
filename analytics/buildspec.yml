@@ -1,27 +1,42 @@
-version: 0.2
+# version: 0.2
 
-phases:
-  pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      # Create a new ECR repository
-      - aws ecr create-repository --repository-name $REPO-NAME || true
-      - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $REPO_NAME --query 'repositories[0].repositoryUri' --output text || echo "$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME")
-      # - echo Using ECR Repository URI "$REPOSITORY_URI"
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
-  build:
-    commands:
-      - echo Build started on `date`
-      - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI .
-      - docker tag $REPOSITORY_URI:latest $IMAGE_URI
-  post_build:
-    commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images to ECR...
-      - docker push $IMAGE_URI
-artifacts:
-  files:
-    - '**/*'
+# phases:
+#   pre_build:
+#     commands:
+#       - echo Logging in to Amazon ECR...
+#       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+#       # Create a new ECR repository
+#       - aws ecr create-repository --repository-name $REPO-NAME || true
+#       - REPOSITORY_URI=$(aws ecr describe-repositories --repository-names $REPO_NAME --query 'repositories[0].repositoryUri' --output text || echo "$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPO_NAME")
+#       # - echo Using ECR Repository URI "$REPOSITORY_URI"
+#       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+#       - IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
+#   build:
+#     commands:
+#       - echo Build started on `date`
+#       - echo Building the Docker image...
+#       - docker build -t $REPOSITORY_URI .
+#       - docker tag $REPOSITORY_URI:latest $IMAGE_URI
+#   post_build:
+#     commands:
+#       - echo Build completed on `date`
+#       - echo Pushing the Docker images to ECR...
+#       - docker push $IMAGE_URI
+# artifacts:
+#   files:
+#     - '**/*'
+
+version: 2.1
+jobs:
+  create-eks-cluster:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Create/Provision ECR Repository
+          command: |
+            # Check if the ECR repository already exists, if not, create it
+            if ! aws ecr describe-repositories --repository-names $REPO_NAME &> /dev/null; then
+              aws ecr create-repository --repository-name $REPO_NAME
+            fi
